@@ -29,4 +29,4 @@ Server will automatically resend message to other clients connected on server.
 
 ## License
 
- Licensed under MIT.
+  Licensed under MIT.
