@@ -6,4 +6,4 @@ all: client
 client: client.cpp
 		${CC} ${CPPFLAGS} client.cpp -o chat_client
 clean:
-		${RM} *.o
+        ${RM} *.o
