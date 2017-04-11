@@ -38,7 +38,6 @@ int main (int argc, char const *argv[]) {
         exit(1);
     }
     //read port and its length
-    // TODO port is 21011
     if (sscanf("21011", "%d%n", &port, &n) != 1) {
         fprintf(stderr, "bad port number: %d\n", port);
         exit(1);
@@ -88,7 +87,7 @@ int main (int argc, char const *argv[]) {
             if ((read_val = read(sd, &readbuf, sizeof(readbuf)))) {
                 cout << readbuf;
                 // clear buffer
-                memset(readbuf, '\0', sizeof(readbuf));
+                //memset(readbuf, '\0', sizeof(readbuf));
             }
         }
         else { //send | father
@@ -106,7 +105,7 @@ int main (int argc, char const *argv[]) {
                 // send final message
                 send(sd, sendbuf, sizeof(sendbuf), 0);
                 // clear buffer
-                memset(sendbuf, '\0', sizeof(sendbuf));
+                //memset(sendbuf, '\0', sizeof(sendbuf));
             }
         }
     }
@@ -121,7 +120,7 @@ int main (int argc, char const *argv[]) {
         exit(0); //exit son
     }
 
-    memset(logbuf, '\0', sizeof(logbuf));
+    //memset(logbuf, '\0', sizeof(logbuf));
     // concatenate
     conc = nick_name + " logged out" + "\r\n";
     strcpy(logbuf, conc.c_str());
