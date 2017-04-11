@@ -100,6 +100,7 @@ int main (int argc, char const *argv[]) {
                 conc_string = nick_name + ": " + s_sendbuf;
                 conc_string.pop_back();
                 conc_string += "\r\n";
+                conc_string.push_back('\0');
                 // do copy of concatanate string to empty buf
                 strcpy(sendbuf, conc_string.c_str());
                 // send final message
