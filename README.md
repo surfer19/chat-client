@@ -8,12 +8,17 @@ Server will automatically resend message to other clients connected on server.
 ## Installation
 
  1. clone project `git clone https://github.com/surfer19/chat-client.git`
- 2. `cd chat-client/server`
- 3. start server with `node app.js` (!IMPORTANT! to use command 'node' must be installed nodejs)
- 4. open new terminal and go to project folder
- 5. build client with `make`
+ 2. `cd chat-client`
+ 3. build client with `make`
+ 4. run `chmod +x chat_client chat_server` for make executable files
 
 ## Usage
+
+#### Start server:
+
+start server at: `localhost` listen on port: `21011`
+
+    ./chat_server
 
 #### Start client:
 
@@ -22,6 +27,10 @@ Server will automatically resend message to other clients connected on server.
 #### Example with our server:
 
     ./chat_client -i localhost -u Kamil
+
+## Extras
+
+     start another server in `chat_client/server` with `node app.js` (!IMPORTANT! to use command 'node' must be installed nodejs)
 
 ## Author
 
