@@ -16,6 +16,13 @@ using namespace std;
 
 #define MAXMSG 1024
 
+void sig_handler(int signo)
+{
+    if (signo == SIGINT)
+        printf("received SIGINT\n");
+}
+
+
 int main (int argc, char const *argv[]) {
     // inits
     int port, n, sd, send_val, read_val;
@@ -120,8 +127,8 @@ int main (int argc, char const *argv[]) {
      *
      */
 
-    if (pid == 0) {
-        exit(0); //exit son
+    if (signal(SIGINT, sig_handler) == SIG_ERR){
+        printf("\ncan't catch SIGINT\n");
     }
 
     memset(logbuf, '\0', sizeof(logbuf));
@@ -131,6 +138,9 @@ int main (int argc, char const *argv[]) {
     // send message about disc
     send(sd, &logbuf, sizeof(logbuf), 0);
 
+    if (pid == 0) {
+        exit(0); //exit son
+    }
     kill(pid,SIGKILL); // kill son
     wait(NULL); // wait for killing
     shutdown(sd,2);
