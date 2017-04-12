@@ -60,6 +60,7 @@ int main (int argc, char const *argv[]) {
 
     memset(sendbuf, '\0', sizeof(sendbuf));
     memset(readbuf, '\0', sizeof(readbuf));
+    memset(logbuf, '\0', sizeof(logbuf));
 
     send_val = 1;
     read_val = 1;
