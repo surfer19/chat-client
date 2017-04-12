@@ -58,6 +58,8 @@ int main (int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    memset(sendbuf, '\0', sizeof(sendbuf));
+    memset(readbuf, '\0', sizeof(readbuf));
 
     send_val = 1;
     read_val = 1;
