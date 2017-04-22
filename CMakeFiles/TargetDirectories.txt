@@ -1,0 +1,3 @@
+/Users/majko/workspace/chat-client/CMakeFiles/rebuild_cache.dir
+/Users/majko/workspace/chat-client/CMakeFiles/edit_cache.dir
+/Users/majko/workspace/chat-client/CMakeFiles/client.dir

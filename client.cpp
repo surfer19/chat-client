@@ -19,17 +19,22 @@ using namespace std;
 char logbuf[MAXMSG];  //send inital msg GLOBAL VARIABLE
 int sd, pid; ///global vars
 int sig_handler_used = 0;
+static volatile int exit_request = 0;
 
-void exit_error(char* msg) {
-    perror(msg);
-    exit(1);
-}
-
-void KBInterrupt(int sig) {
-    fprintf(stdout,"Exit!\n");
-    send(sd, &logbuf, sizeof(logbuf), 0);
-    exit(1);
-}
+//
+//static void hdl (int sig)
+//{
+//    send(sd, &logbuf, sizeof(logbuf), 0);
+//    if (pid == 0) {
+//        exit(0); //exit son
+//    }
+//    sig_handler_used = 1;
+//    kill(pid,SIGKILL); // kill son
+//    wait(NULL); // wait for killing
+//    shutdown(sd,2);
+//    close(sd);
+//    exit(0);
+//}
 
 void sig_handler(int signo)
 {
@@ -98,23 +103,24 @@ int main (int argc, char const *argv[]) {
      * catch signal things
      *
      */
-    // Variables
-    fd_set fd;
-    int charsRead;
-    char sig_buff[256];
-    struct sigaction handler;
-
-    // Setup Action Handler
-    handler.sa_handler = KBInterrupt; // Function to call
-    if (sigfillset(&handler.sa_mask) < 0)
-        exit_error("sigfillset failed");
-    handler.sa_flags=0;
-    if (sigaction(SIGINT,&handler,0) < 0) // Setup signal
-        exit_error("sigaction failed");
-
-    // Setup file descriptors
-    FD_ZERO(&fd);
-    FD_SET(STDIN_FILENO,&fd);
+//    int lfd;
+//    struct sockaddr_in myaddr;
+//    int yes = 1;
+//    sigset_t mask;
+//    sigset_t orig_mask;
+//    struct sigaction act;
+//
+//    memset (&act, 0, sizeof(act));
+//    act.sa_handler = hdl;
+//
+//    /* This server should shut down on SIGTERM. */
+//    if (sigaction(SIGINT, &act, 0)) {
+//        perror ("sigaction");
+//        return 1;
+//    }
+//
+//    sigemptyset (&mask);
+//    sigaddset (&mask, SIGINT);
 
 
 
@@ -164,16 +170,11 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(readbuf, '\0', sizeof(readbuf));
             }
-//            if (signal(SIGINT, sig_handler) == SIG_ERR){
-//                printf("\ncan't catch SIGINT\n");
-//            }
-            select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
-            if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
-                charsRead = read(STDIN_FILENO,sig_buff,255);
-                write(STDOUT_FILENO,sig_buff,charsRead);
+            if (signal(SIGINT, sig_handler) == SIG_ERR){
+                printf("\ncan't catch SIGINT\n");
             }
-        }
-        else { //send | father
+
+        } else {//send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
                 // copy buf to string
                 s_sendbuf = sendbuf;
@@ -191,19 +192,39 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(sendbuf, '\0', sizeof(sendbuf));
 
-//                if (signal(SIGINT, sig_handler) == SIG_ERR){
-//                    printf("\ncan't catch SIGINT\n");
+                if (signal(SIGINT, sig_handler) == SIG_ERR){
+                    printf("\ncan't catch SIGINT\n");
+                }
+
+//                fd_set fds;
+//                int res;
+//
+//                /* BANG! we can get SIGTERM at this point, but it will be
+//                 * delivered while we are in pselect(), because now
+//                 * we block SIGTERM.
+//                 */
+//
+//                FD_ZERO (&fds);
+//                FD_SET (lfd, &fds);
+//
+//                res = pselect (lfd + 1, &fds, NULL, NULL, NULL, &orig_mask);
+//                if (res < 0 && errno != EINTR) {
+//                    perror ("select");
+//                    return 1;
 //                }
+//                else if (exit_request) {
+//                    puts ("exit");
+//                    break;
+//                }
+//                else if (res == 0)
+//                    continue;
             }
-            select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
-            if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
-                charsRead = read(STDIN_FILENO,sig_buff,255);
-                write(STDOUT_FILENO,sig_buff,charsRead);
-            }
+
+
         }
+
     }
-
-
     return 0;
+
 
 }
