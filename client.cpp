@@ -101,7 +101,7 @@ int main (int argc, char const *argv[]) {
     // Variables
     fd_set fd;
     int charsRead;
-    char buff[256];
+    char sig_buff[256];
     struct sigaction handler;
 
     // Setup Action Handler
@@ -169,8 +169,8 @@ int main (int argc, char const *argv[]) {
 //            }
             select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
             if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
-                charsRead = read(STDIN_FILENO,buff,255);
-                write(STDOUT_FILENO,buff,charsRead);
+                charsRead = read(STDIN_FILENO,sig_buff,255);
+                write(STDOUT_FILENO,sig_buff,charsRead);
             }
         }
         else { //send | father
@@ -194,6 +194,11 @@ int main (int argc, char const *argv[]) {
 //                if (signal(SIGINT, sig_handler) == SIG_ERR){
 //                    printf("\ncan't catch SIGINT\n");
 //                }
+            }
+            select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
+            if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
+                charsRead = read(STDIN_FILENO,sig_buff,255);
+                write(STDOUT_FILENO,sig_buff,charsRead);
             }
         }
     }
