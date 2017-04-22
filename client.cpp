@@ -150,9 +150,9 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(sendbuf, '\0', sizeof(sendbuf));
 
-                if (signal(SIGINT, sig_handler) == SIG_ERR){
-                    printf("\ncan't catch SIGINT\n");
-                }
+//                if (signal(SIGINT, sig_handler) == SIG_ERR){
+//                    printf("\ncan't catch SIGINT\n");
+//                }
             }
         }
     }
