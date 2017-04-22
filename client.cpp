@@ -20,6 +20,16 @@ char logbuf[MAXMSG];  //send inital msg GLOBAL VARIABLE
 int sd, pid; ///global vars
 int sig_handler_used = 0;
 
+void exit_error(char* msg) {
+    perror(msg);
+    exit(1);
+}
+
+void KBInterrupt(int sig) {
+    printf("Exit!\n");
+    exit(1);
+}
+
 void sig_handler(int signo)
 {
     if (signo == SIGINT) {
@@ -81,6 +91,31 @@ int main (int argc, char const *argv[]) {
         perror("connection failed");
         exit(EXIT_FAILURE);
     }
+
+    /*
+     *
+     * catch signal things
+     *
+     */
+    // Variables
+    fd_set fd;
+    int charsRead;
+    char buff[256];
+    struct sigaction handler;
+
+    // Setup Action Handler
+    handler.sa_handler = KBInterrupt; // Function to call
+    if (sigfillset(&handler.sa_mask) < 0)
+        exit_error("sigfillset failed");
+    handler.sa_flags=0;
+    if (sigaction(SIGINT,&handler,0) < 0) // Setup signal
+        exit_error("sigaction failed");
+
+    // Setup file descriptors
+    FD_ZERO(&fd);
+    FD_SET(STDIN_FILENO,&fd);
+
+
 
     memset(sendbuf, '\0', sizeof(sendbuf));
     memset(readbuf, '\0', sizeof(readbuf));
@@ -154,6 +189,11 @@ int main (int argc, char const *argv[]) {
 //                    printf("\ncan't catch SIGINT\n");
 //                }
             }
+        }
+        select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
+        if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
+            charsRead = read(STDIN_FILENO,buff,255);
+            write(STDOUT_FILENO,buff,charsRead);
         }
     }
 
