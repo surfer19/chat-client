@@ -1,3 +1,12 @@
+/* ******************************** client.cpp ****************************** */
+/* Soubor:              client.cpp                                            */
+/* Datum:               20.4.2017                                             */
+/* Predmet:             IPK - Počítačové komunikace a sítě                    */
+/* Projekt:             Chatovací klient                                      */
+/* Varianta zadani:                                                           */
+/* Autor, login:        Mrva Marián           xmrvam01                        */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,22 +28,6 @@ using namespace std;
 char logbuf[MAXMSG];  //send inital msg GLOBAL VARIABLE
 int sd, pid; ///global vars
 int sig_handler_used = 0;
-static volatile int exit_request = 0;
-
-//
-//static void hdl (int sig)
-//{
-//    send(sd, &logbuf, sizeof(logbuf), 0);
-//    if (pid == 0) {
-//        exit(0); //exit son
-//    }
-//    sig_handler_used = 1;
-//    kill(pid,SIGKILL); // kill son
-//    wait(NULL); // wait for killing
-//    shutdown(sd,2);
-//    close(sd);
-//    exit(0);
-//}
 
 void sig_handler(int signo)
 {
@@ -98,32 +91,7 @@ int main (int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    /*
-     *
-     * catch signal things
-     *
-     */
-//    int lfd;
-//    struct sockaddr_in myaddr;
-//    int yes = 1;
-//    sigset_t mask;
-//    sigset_t orig_mask;
-//    struct sigaction act;
-//
-//    memset (&act, 0, sizeof(act));
-//    act.sa_handler = hdl;
-//
-//    /* This server should shut down on SIGTERM. */
-//    if (sigaction(SIGINT, &act, 0)) {
-//        perror ("sigaction");
-//        return 1;
-//    }
-//
-//    sigemptyset (&mask);
-//    sigaddset (&mask, SIGINT);
-
-
-
+    // clear buffers
     memset(sendbuf, '\0', sizeof(sendbuf));
     memset(readbuf, '\0', sizeof(readbuf));
     memset(logbuf, '\0', sizeof(logbuf));
@@ -160,7 +128,7 @@ int main (int argc, char const *argv[]) {
      */
 
     pid = fork(); // create son
-//|| signal(SIGINT,sig_handler) !=  SIG_ERR
+
     while ((send_val && read_val)) {
         //recv
         if (pid == 0) //son
@@ -195,36 +163,8 @@ int main (int argc, char const *argv[]) {
                 if (signal(SIGINT, sig_handler) == SIG_ERR){
                     printf("\ncan't catch SIGINT\n");
                 }
-
-//                fd_set fds;
-//                int res;
-//
-//                /* BANG! we can get SIGTERM at this point, but it will be
-//                 * delivered while we are in pselect(), because now
-//                 * we block SIGTERM.
-//                 */
-//
-//                FD_ZERO (&fds);
-//                FD_SET (lfd, &fds);
-//
-//                res = pselect (lfd + 1, &fds, NULL, NULL, NULL, &orig_mask);
-//                if (res < 0 && errno != EINTR) {
-//                    perror ("select");
-//                    return 1;
-//                }
-//                else if (exit_request) {
-//                    puts ("exit");
-//                    break;
-//                }
-//                else if (res == 0)
-//                    continue;
             }
-
-
         }
-
     }
     return 0;
-
-
 }
