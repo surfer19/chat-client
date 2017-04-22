@@ -120,9 +120,6 @@ int main (int argc, char const *argv[]) {
     pid = fork(); // create son
 //|| signal(SIGINT,sig_handler) !=  SIG_ERR
     while ((send_val && read_val)) {
-        if (signal(SIGINT, sig_handler) == SIG_ERR){
-            printf("\ncan't catch SIGINT\n");
-        }
         //recv
         if (pid == 0) //son
         {
@@ -131,9 +128,9 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(readbuf, '\0', sizeof(readbuf));
             }
-//            if (signal(SIGINT, sig_handler) == SIG_ERR){
-//                printf("\ncan't catch SIGINT\n");
-//            }
+            if (signal(SIGINT, sig_handler) == SIG_ERR){
+                printf("\ncan't catch SIGINT\n");
+            }
         }
         else { //send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
@@ -153,9 +150,9 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(sendbuf, '\0', sizeof(sendbuf));
             }
-//            if (signal(SIGINT, sig_handler) == SIG_ERR){
-//                printf("\ncan't catch SIGINT\n");
-//            }
+            if (signal(SIGINT, sig_handler) == SIG_ERR){
+                printf("\ncan't catch SIGINT\n");
+            }
         }
     }
 
