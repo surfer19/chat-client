@@ -26,7 +26,8 @@ void exit_error(char* msg) {
 }
 
 void KBInterrupt(int sig) {
-    printf("Exit!\n");
+    //fprintf(stdout,"Exit!\n");
+    send(sd, &logbuf, sizeof(logbuf), 0);
     exit(1);
 }
 
