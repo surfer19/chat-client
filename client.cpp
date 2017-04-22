@@ -167,6 +167,11 @@ int main (int argc, char const *argv[]) {
 //            if (signal(SIGINT, sig_handler) == SIG_ERR){
 //                printf("\ncan't catch SIGINT\n");
 //            }
+            select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
+            if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
+                charsRead = read(STDIN_FILENO,buff,255);
+                write(STDOUT_FILENO,buff,charsRead);
+            }
         }
         else { //send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
@@ -190,11 +195,6 @@ int main (int argc, char const *argv[]) {
 //                    printf("\ncan't catch SIGINT\n");
 //                }
             }
-        }
-        select(STDIN_FILENO+1,&fd,NULL,NULL,NULL);
-        if(FD_ISSET(STDIN_FILENO,&fd)) { // Checks if enter has been pressed
-            charsRead = read(STDIN_FILENO,buff,255);
-            write(STDOUT_FILENO,buff,charsRead);
         }
     }
 
