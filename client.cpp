@@ -16,22 +16,39 @@ using namespace std;
 
 #define MAXMSG 1024
 
+char logbuf[MAXMSG];  //send inital msg GLOBAL VARIABLE
+int sd, pid; ///global vars
+int sig_handler_used = 0;
+
 void sig_handler(int signo)
 {
-    if (signo == SIGINT)
-        printf("received SIGINT\n");
+    if (signo == SIGINT) {
+
+        //printf("received SIGINT\n");
+        // send message about disc
+        send(sd, &logbuf, sizeof(logbuf), 0);
+        if (pid == 0) {
+            exit(0); //exit son
+        }
+        sig_handler_used = 1;
+        kill(pid,SIGKILL); // kill son
+        wait(NULL); // wait for killing
+        shutdown(sd,2);
+        close(sd);
+        exit(0);
+    }
 }
 
 
 int main (int argc, char const *argv[]) {
     // inits
-    int port, n, sd, send_val, read_val;
+    int port, n, send_val, read_val;
     string nick_name;
     struct hostent *phe;
     struct sockaddr_in struct_sock;
     char readbuf[MAXMSG]; //read
     char sendbuf[MAXMSG]; //send
-    char logbuf[MAXMSG];  //send inital msg
+
     string conc_string;
     string s_sendbuf;
 
@@ -84,13 +101,28 @@ int main (int argc, char const *argv[]) {
 
     /*
      *
+     *  disconnect and bye message
+     *
+     */
+
+
+    memset(logbuf, '\0', sizeof(logbuf));
+    // concatenate
+    conc = nick_name + " logged out" + "\r\n";
+    strcpy(logbuf, conc.c_str());
+
+    /*
+     *
      * FORK process
      *
      */
 
-    int pid = fork(); // create son
-
-    while (send_val && read_val) {
+    pid = fork(); // create son
+//|| signal(SIGINT,sig_handler) !=  SIG_ERR
+    while ((send_val && read_val)) {
+        if (signal(SIGINT, sig_handler) == SIG_ERR){
+            printf("\ncan't catch SIGINT\n");
+        }
         //recv
         if (pid == 0) //son
         {
@@ -99,6 +131,9 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(readbuf, '\0', sizeof(readbuf));
             }
+//            if (signal(SIGINT, sig_handler) == SIG_ERR){
+//                printf("\ncan't catch SIGINT\n");
+//            }
         }
         else { //send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
@@ -118,33 +153,12 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(sendbuf, '\0', sizeof(sendbuf));
             }
+//            if (signal(SIGINT, sig_handler) == SIG_ERR){
+//                printf("\ncan't catch SIGINT\n");
+//            }
         }
     }
 
-    /*
-     *
-     *  disconnect and bye message
-     *
-     */
-
-    if (signal(SIGINT, sig_handler) == SIG_ERR){
-        printf("\ncan't catch SIGINT\n");
-    }
-
-    memset(logbuf, '\0', sizeof(logbuf));
-    // concatenate
-    conc = nick_name + " logged out" + "\r\n";
-    strcpy(logbuf, conc.c_str());
-    // send message about disc
-    send(sd, &logbuf, sizeof(logbuf), 0);
-
-    if (pid == 0) {
-        exit(0); //exit son
-    }
-    kill(pid,SIGKILL); // kill son
-    wait(NULL); // wait for killing
-    shutdown(sd,2);
-    close(sd);
 
     return 0;
 
