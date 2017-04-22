@@ -26,7 +26,7 @@ void exit_error(char* msg) {
 }
 
 void KBInterrupt(int sig) {
-    //fprintf(stdout,"Exit!\n");
+    fprintf(stdout,"Exit!\n");
     send(sd, &logbuf, sizeof(logbuf), 0);
     exit(1);
 }
@@ -164,9 +164,9 @@ int main (int argc, char const *argv[]) {
                 // clear buffer
                 memset(readbuf, '\0', sizeof(readbuf));
             }
-            if (signal(SIGINT, sig_handler) == SIG_ERR){
-                printf("\ncan't catch SIGINT\n");
-            }
+//            if (signal(SIGINT, sig_handler) == SIG_ERR){
+//                printf("\ncan't catch SIGINT\n");
+//            }
         }
         else { //send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
