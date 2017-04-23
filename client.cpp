@@ -129,7 +129,7 @@ int main (int argc, char const *argv[]) {
 
     pid = fork(); // create son
 
-    while ((send_val && read_val)) {
+    while (send_val && read_val) {
         //recv
         if (pid == 0) //son
         {
@@ -139,29 +139,34 @@ int main (int argc, char const *argv[]) {
                 memset(readbuf, '\0', sizeof(readbuf));
             }
             if (signal(SIGINT, sig_handler) == SIG_ERR){
-                printf("\ncan't catch SIGINT\n");
+                fprintf(stderr, "\ncan't catch SIGINT\n");
             }
 
         } else {//send | father
             if ((send_val = read(0, &sendbuf, sizeof(sendbuf)))) {
-                // copy buf to string
+                    // copy buf to string
                 s_sendbuf = sendbuf;
-                // clear buf
-                memset(sendbuf, '\0', sizeof(sendbuf));
-                // concatenate strings
-                conc_string = nick_name + ": " + s_sendbuf;
-                conc_string.pop_back();
-                conc_string += "\r\n";
-                conc_string.push_back('\0');
-                // do copy of concatanate string to empty buf
-                strcpy(sendbuf, conc_string.c_str());
-                // send final message
-                send(sd, sendbuf, sizeof(sendbuf), 0);
+
+                if(sendbuf[0] != '\n'){
+                    // clear buf
+                    memset(sendbuf, '\0', sizeof(sendbuf));
+                    // concatenate strings
+                    conc_string = nick_name + ": " + s_sendbuf;
+                    conc_string.pop_back();
+                    conc_string += "\r\n";
+                    conc_string.push_back('\0');
+                    // do copy of concatanate string to empty buf
+                    strcpy(sendbuf, conc_string.c_str());
+
+                    // send final message
+                    send(sd, sendbuf, sizeof(sendbuf), 0);
+                }
+
                 // clear buffer
                 memset(sendbuf, '\0', sizeof(sendbuf));
 
                 if (signal(SIGINT, sig_handler) == SIG_ERR){
-                    printf("\ncan't catch SIGINT\n");
+                    fprintf(stderr,"\ncan't catch SIGINT\n");
                 }
             }
         }
